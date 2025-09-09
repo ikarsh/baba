@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Mime;
 using System.Reflection.Metadata.Ecma335;
@@ -27,6 +28,10 @@ static class Config
 
 static class Utils
 {
+    public static  IEnumerable<Point> BoardPositions()
+    {
+        return Enumerable.Range(0, Config.SCR_WID).SelectMany(x => Enumerable.Range(0, Config.SCR_HEI).Select(y => new Point(x, y)));
+    }
     public static bool InBoard(Point point)
     {
         return point.X >= 0 && point.X <= Config.SCR_WID - 1 && point.Y >= 0 && point.Y <= Config.SCR_HEI - 1;
@@ -66,46 +71,13 @@ static class DirectionExtensions
     }
 }
 
-public class Object
-{
-    public Type type;
-    public Point position;
-    public Object(Type type, Point position)
-    {
-        this.type = type;
-        this.position = position;
-    }
-    public void Move(Game1 g, Direction d)
-    {
-        // Attempts to move in a direction, pushing everything in the way.
-        List<Object> movedObjects = new List<Object> { this };
-        Point current = d.OffsetPoint(position);
-        while (true)
-        {
-            if (!Utils.InBoard(current)) return;
-            if (g.ObjectsOn(current).Any(o => g.Is(o.type, Property.Stop) && !g.Is(o.type, Property.Push))) return;
-
-            List<Object> pushes = g.ObjectsOn(current).Where(o => g.Is(o.type, Property.Push)).ToList();
-            if (pushes.Count() == 0)
-            {
-                foreach (Object o in movedObjects) o.position = d.OffsetPoint(o.position);
-                return;
-            }
-            else
-            {
-                movedObjects = movedObjects.Concat(pushes).ToList();
-                current = d.OffsetPoint(current);
-            }
-        }
-    }
-}
 
 public class Game1 : Game
 {
     GraphicsDeviceManager _graphics;
     SpriteBatch _spriteBatch;
-    List<Object> objects;
-    Dictionary<Type, Texture2D> textures;
+    Dictionary<Point, List<Object>> board;
+    Dictionary<Object, Texture2D> textures;
 
     double lastMoveTime = 0;
     public Game1()
@@ -123,48 +95,48 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        objects = Level(1);
+        board = Level(0);
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        textures = new Dictionary<Type, Texture2D>();
+        textures = new Dictionary<Object, Texture2D>();
 
         foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
         {
-            textures[new SpriteT(sprite)] = Content.Load<Texture2D>($"sprites/{sprite}");
-            textures[new SpriteCodeT(sprite)] = Content.Load<Texture2D>($"codes/sprites/{sprite}");
+            textures[new SpriteObject(sprite)] = Content.Load<Texture2D>($"sprites/{sprite}");
+            textures[new SpriteCode(sprite)] = Content.Load<Texture2D>($"codes/sprites/{sprite}");
         }
 
         foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
         {
-            textures[new SyntaxT(syntax)] = Content.Load<Texture2D>($"codes/syntax/{syntax}");
+            textures[new SyntaxCode(syntax)] = Content.Load<Texture2D>($"codes/syntax/{syntax}");
         }
 
         foreach (Property property in Enum.GetValues(typeof(Property)))
         {
-            textures[new PropertyT(property)] = Content.Load<Texture2D>($"codes/properties/{property}");
+            textures[new PropertyCode(property)] = Content.Load<Texture2D>($"codes/properties/{property}");
         }
     }
 
-    public void DrawObject(Object o)
+    public void DrawObject(Object o, Point position)
     {
-        Texture2D texture = textures[o.type];
-        Utils.Draw(_spriteBatch, o.position, texture);
+        Texture2D texture = textures[o];
+        Utils.Draw(_spriteBatch, position, texture);
         return;
     }
 
     public List<Object> ObjectsOn(Point position)
     {
-        return objects.Where(o => o.position == position).ToList();
+        return board[position];
     }
 
     bool CodeSequenceAppears(List<CodeT> codes)
     {
         if (codes.Count() == 0) return true;
-        foreach (Point p in objects.Where(o => o.type == codes[0]).Select(o => o.position))
+        foreach (Point p in Utils.BoardPositions())
         {
             foreach (Direction d in new[] { Direction.Down, Direction.Right })
             {
@@ -173,7 +145,7 @@ public class Game1 : Game
 
                 foreach (CodeT code in codes)
                 {
-                    if (!ObjectsOn(curr).Any(o => o.type == code))
+                    if (!ObjectsOn(curr).Any(o => o == code))
                     {
                         broke = true;
                         break;
@@ -188,12 +160,17 @@ public class Game1 : Game
         return false;
     }
 
-    public bool Is(Type type, Property prop)
+    public List<Object> Objects()
+    {
+        return board.Values.SelectMany(l => l).ToList();
+    }
+
+    public bool Is(Object type, Property prop)
     {
         return type switch
         {
-            SpriteT(Sprite sprite) => CodeSequenceAppears(new List<CodeT> {
-            new SpriteCodeT(sprite), new SyntaxT(Syntax.Is), new PropertyT(prop)
+            SpriteObject(Sprite sprite) => CodeSequenceAppears(new List<CodeT> {
+            new SpriteCode(sprite), new SyntaxCode(Syntax.Is), new PropertyCode(prop)
         }),
             CodeT => IsCode(prop),
             _ => throw new UnreachableException()
@@ -206,13 +183,76 @@ public class Game1 : Game
         return prop == Property.Push || prop == Property.Stop;
     }
 
+    IEnumerable<Tuple<Point, Object>> PositionObject() {
+        return Utils.BoardPositions().SelectMany(p => board[p].Select(o => new Tuple<Point, Object>(p, o)));
+    }
+
     void Move(Direction d)
     {
-        foreach (Object o in objects)
+        Dictionary<Point, List<(Object, Direction?)>> markedBoard = new Dictionary<Point, List<(Object, Direction?)>>();
+        foreach (Point position in Utils.BoardPositions())
         {
-            if (Is(o.type, Property.You))
+            markedBoard[position] = new List<(Object, Direction?)>();
+            foreach (Object o in board[position])
             {
-                o.Move(this, d);
+                markedBoard[position].Add((o, null));
+            }
+        }
+        foreach ((Point position, Object o) in PositionObject())
+        {
+            if (Is(o, Property.You))
+            {
+                Point curr = position;
+                int i = 0;
+                bool canMove = true;
+                while (true)
+                {
+                    curr = d.OffsetPoint(curr);
+                    i += 1;
+                    if (!Utils.InBoard(curr) || board[curr].Any(_o => Is(_o, Property.Stop) & !Is(_o, Property.Push)))
+                    {
+                        canMove = false;
+                        break;
+                    }
+                    if (!board[curr].Any(_o => Is(_o, Property.Push))) break;
+                }
+                if (canMove)
+                {
+                    markedBoard[position] = markedBoard[position].Select(od => od.Item1 == o ? (o, d) : od).ToList();
+                    curr = position;
+                    while (i > 0)
+                    {
+                        i -= 1;
+                        curr = d.OffsetPoint(curr);
+                        markedBoard[curr] = markedBoard[curr].Select(od => Is(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
+                    }
+                }
+            }
+        }
+        board = new Dictionary<Point, List<Object>>();
+        foreach (Point position in Utils.BoardPositions())
+        {
+            board[position] = new List<Object>();
+        }
+        foreach (Point position in Utils.BoardPositions())
+        {
+            foreach ((Object o, Direction? _dir) in markedBoard[position])
+            {
+                if (_dir is null)
+                {
+                    board[position].Add(o);
+                }
+            }
+        }
+        
+        foreach (Point position in Utils.BoardPositions())
+        {
+            foreach ((Object o, Direction? _dir) in markedBoard[position])
+            {
+                if (_dir is Direction dir)
+                {
+                    board[dir.OffsetPoint(position)].Add(o);
+                }
             }
         }
     }
@@ -229,19 +269,26 @@ public class Game1 : Game
             lastMoveTime = time;
         }
 
-        foreach (Object o in objects)
+        foreach (Object o in Objects())
         {
-            if (Is(o.type, Property.You))
+            if (Is(o, Property.You))
             {
-                if (objects.Any(ob => Is(ob.type, Property.Win) && ob.position == o.position))
+                foreach (Point position in Utils.BoardPositions())
                 {
-                    // TODO add win things
-                    Exit();
+                    if (board[position].Any(o => Is(o, Property.You) && board[position].Any(o => Is(o, Property.Win))))
+                    {
+                        Win();
+                    }
                 }
             }
         }
 
         base.Update(gameTime);
+    }
+
+    void Win()
+    {
+        Exit();
     }
 
     protected override void Draw(GameTime gameTime)
@@ -250,12 +297,14 @@ public class Game1 : Game
 
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
-        foreach (Object o in objects)
+        foreach (Point position in Utils.BoardPositions())
         {
-            DrawObject(o);
+            if (board[position].Count() > 0)
+            {
+                DrawObject(board[position].Last(), position);
+            }
         }
         _spriteBatch.End();
-
         base.Draw(gameTime);
     }
 }

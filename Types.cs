@@ -6,41 +6,41 @@ public enum Sprite { Baba, Flag, Wall, Tile, Rock }
 public enum Syntax { Is }
 public enum Property { You, Win, Stop, Push }
 
-public abstract record Type;
+public abstract record Object;
 // abstract record CodeRecord;
-record SpriteT(Sprite sprite) : Type;
-abstract record CodeT : Type;
-record SpriteCodeT(Sprite sprite) : CodeT;
-record SyntaxT(Syntax syntax) : CodeT;
-record PropertyT(Property property) : CodeT;
+record SpriteObject(Sprite sprite) : Object;
+abstract record CodeT : Object;
+record SpriteCode(Sprite sprite) : CodeT;
+record SyntaxCode(Syntax syntax) : CodeT;
+record PropertyCode(Property property) : CodeT;
 
 
-public static class TypeExtensions
+public static class ObjectExtensions
 {
-    static Dictionary<Type, (string, string)> typeCodes = new() {
-        { new SpriteT(Sprite.Baba), ("baba", "b") },
-        {new SpriteCodeT(Sprite.Baba), ("BABA", "B") },
-        { new SpriteT(Sprite.Wall), ("wall", "w") },
-        {new SpriteCodeT(Sprite.Wall), ("WALL", "W") },
-        { new SpriteT(Sprite.Flag), ("flag", "f") },
-        {new SpriteCodeT(Sprite.Flag), ("FLAG", "F") },
-        { new SpriteT(Sprite.Rock), ("rock", "r") },
-        {new SpriteCodeT(Sprite.Rock), ("ROCK", "R") },
-        { new SpriteT(Sprite.Tile), ("tile", "t") },
-        {new SpriteCodeT(Sprite.Tile), ("TILE", "T") },
-        { new SyntaxT(Syntax.Is), ("is", "=") },
-        { new PropertyT(Property.You), ("you", "Y") },
-        { new PropertyT(Property.Win), ("win", "!") },
-        { new PropertyT(Property.Stop), ("stop", "#") },
-        { new PropertyT(Property.Push), ("push", ">") },
+    static Dictionary<Object, (string, string)> typeCodes = new() {
+        { new SpriteObject(Sprite.Baba), ("baba", "b") },
+        {new SpriteCode(Sprite.Baba), ("BABA", "B") },
+        { new SpriteObject(Sprite.Wall), ("wall", "w") },
+        {new SpriteCode(Sprite.Wall), ("WALL", "W") },
+        { new SpriteObject(Sprite.Flag), ("flag", "f") },
+        {new SpriteCode(Sprite.Flag), ("FLAG", "F") },
+        { new SpriteObject(Sprite.Rock), ("rock", "r") },
+        {new SpriteCode(Sprite.Rock), ("ROCK", "R") },
+        { new SpriteObject(Sprite.Tile), ("tile", "t") },
+        {new SpriteCode(Sprite.Tile), ("TILE", "T") },
+        { new SyntaxCode(Syntax.Is), ("is", "=") },
+        { new PropertyCode(Property.You), ("you", "Y") },
+        { new PropertyCode(Property.Win), ("win", "!") },
+        { new PropertyCode(Property.Stop), ("stop", "#") },
+        { new PropertyCode(Property.Push), ("push", ">") },
     };
 
-    public static string ToString(this Type type)
+    public static string ToString(this Object type)
     {
         return typeCodes[type].Item1;
     }
 
-    public static Type FromCode(string code)
+    public static Object FromCode(string code)
     {
         foreach (var kv in typeCodes)
         {
