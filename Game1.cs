@@ -121,7 +121,7 @@ public class Game1 : Game
     {
         // TODO: Add your initialization logic here
         level = 0;
-        Win();
+        ResetBoard();
         base.Initialize();
     }
 
@@ -242,6 +242,12 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        if (Keyboard.GetState().IsKeyDown(Keys.R))
+        {
+            ResetBoard();
+            return;
+        }
+
         if (DirectionExtensions.FromKeyboard() is Direction d)
         {
             double time = gameTime.TotalGameTime.TotalMilliseconds;
@@ -261,6 +267,11 @@ public class Game1 : Game
         base.Update(gameTime);
     }
 
+    void ResetBoard()
+    {
+        SetBoard(Level(level));
+    }
+
     void SetBoard(Board newBoard)
     {
         board = newBoard;
@@ -276,7 +287,7 @@ public class Game1 : Game
         level += 1;
         try
         {
-            SetBoard(Level(level));
+            ResetBoard();
         }
         catch (KeyNotFoundException)
         {
