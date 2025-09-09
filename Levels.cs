@@ -3,35 +3,44 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using baba;
 using Microsoft.Xna.Framework;
 
 public static class Levels
 {
 
-    public static Dictionary<Point, List<Object>> FromString(string levelStr)
+    public static Board FromString(string levelStr)
     {
         Console.WriteLine("Parsing level...");
-        var objects = new Dictionary<Point, List<Object>>();
         var rows = levelStr.Split('\n').Where(r => !string.IsNullOrWhiteSpace(r)).ToArray();
+        int HEI = rows.Length;
+        int WID = rows[0].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        var objects = new Dictionary<Point, List<Object>>();
+        var board = new Board(WID, HEI, objects);
         for (int y = 0; y < rows.Length; y++)
         {
             var cols = rows[y].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (cols.Length != board.WID)
+            {
+                throw new DataException($"Inconsistent row width at row {y}: expected {board.WID}, got {cols.Length}");
+            }
             for (int x = 0; x < cols.Length; x++)
             {
                 Console.WriteLine($"Processing cell ({x}, {y}): '{cols[x]}'");
                 if (cols[x] == ".")
                 {
-                    objects[new Point(x, y)] = new List<Object> { };
+                    board.objects[new Point(x, y)] = new List<Object> { };
                 }
                 else
                 {
-                    objects[new Point(x, y)] = new List<Object> { ObjectExtensions.FromCode(cols[x]) };
+                    board.objects[new Point(x, y)] = new List<Object> { ObjectExtensions.FromCode(cols[x]) };
                 }
             }
         }
-        return objects;
+        Console.WriteLine("Level parsed successfully.");
+        return board;
     }
-    public static Dictionary<Point, List<Object>> Level(int n)
+    public static Board Level(int n)
     {
         return n switch
         {
