@@ -18,9 +18,9 @@ namespace baba;
 
 static class Config
 {
-    public const int SQUARE_SIZE = 70;
-    public const int SCR_WID = 12;
-    public const int SCR_HEI = 12;
+    public const int SQUARE_SIZE = 50;
+    public const int SCR_WID = 33;
+    public const int SCR_HEI = 18;
 
     public const double MOVE_DELAY_MS = 30;
 }
@@ -66,22 +66,11 @@ static class DirectionExtensions
     }
 }
 
-enum Sprite { Baba, Flag, Wall, Tile, Rock }
-public enum Property { You, Win, Stop, Push }
-
-public abstract record ObjectType;
-// abstract record CodeRecord;
-record SpriteObject(Sprite sprite) : ObjectType;
-abstract record CodeObject : ObjectType;
-record SpriteCode(Sprite sprite) : CodeObject;
-record Is() : CodeObject;
-record PropertyCode(Property property) : CodeObject;
-
 public class Object
 {
-    public ObjectType type;
+    public Type type;
     public Point position;
-    public Object(ObjectType type, Point position)
+    public Object(Type type, Point position)
     {
         this.type = type;
         this.position = position;
@@ -116,7 +105,7 @@ public class Game1 : Game
     GraphicsDeviceManager _graphics;
     SpriteBatch _spriteBatch;
     List<Object> objects;
-    Dictionary<ObjectType, Texture2D> textures;
+    Dictionary<Type, Texture2D> textures;
 
     double lastMoveTime = 0;
     public Game1()
@@ -141,24 +130,23 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        textures = new Dictionary<ObjectType, Texture2D>
+        textures = new Dictionary<Type, Texture2D>();
+
+        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
         {
-            [new SpriteObject(Sprite.Baba)] = Content.Load<Texture2D>("sprites/baba"),
-            [new SpriteObject(Sprite.Wall)] = Content.Load<Texture2D>("sprites/wall"),
-            [new SpriteObject(Sprite.Flag)] = Content.Load<Texture2D>("sprites/flag"),
-            [new SpriteObject(Sprite.Tile)] = Content.Load<Texture2D>("sprites/tile"),
-            [new SpriteObject(Sprite.Rock)] = Content.Load<Texture2D>("sprites/rock"),
-            [new SpriteCode(Sprite.Baba)] = Content.Load<Texture2D>("codes/baba"),
-            [new SpriteCode(Sprite.Wall)] = Content.Load<Texture2D>("codes/wall"),
-            [new SpriteCode(Sprite.Flag)] = Content.Load<Texture2D>("codes/flag"),
-            [new SpriteCode(Sprite.Rock)] = Content.Load<Texture2D>("codes/rock"),
-            [new SpriteCode(Sprite.Tile)] = Content.Load<Texture2D>("codes/tile"),
-            [new Is()] = Content.Load<Texture2D>("codes/is"),
-            [new PropertyCode(Property.You)] = Content.Load<Texture2D>("codes/you"),
-            [new PropertyCode(Property.Win)] = Content.Load<Texture2D>("codes/win"),
-            [new PropertyCode(Property.Stop)] = Content.Load<Texture2D>("codes/stop"),
-            [new PropertyCode(Property.Push)] = Content.Load<Texture2D>("codes/push"),
-        };
+            textures[new SpriteT(sprite)] = Content.Load<Texture2D>($"sprites/{sprite}");
+            textures[new SpriteCodeT(sprite)] = Content.Load<Texture2D>($"codes/sprites/{sprite}");
+        }
+
+        foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
+        {
+            textures[new SyntaxT(syntax)] = Content.Load<Texture2D>($"codes/syntax/{syntax}");
+        }
+
+        foreach (Property property in Enum.GetValues(typeof(Property)))
+        {
+            textures[new PropertyT(property)] = Content.Load<Texture2D>($"codes/properties/{property}");
+        }
     }
 
     public void DrawObject(Object o)
@@ -173,7 +161,7 @@ public class Game1 : Game
         return objects.Where(o => o.position == position).ToList();
     }
 
-    bool CodeSequenceAppears(List<CodeObject> codes)
+    bool CodeSequenceAppears(List<CodeT> codes)
     {
         if (codes.Count() == 0) return true;
         foreach (Point p in objects.Where(o => o.type == codes[0]).Select(o => o.position))
@@ -183,7 +171,7 @@ public class Game1 : Game
                 bool broke = false;
                 Point curr = p;
 
-                foreach (CodeObject code in codes)
+                foreach (CodeT code in codes)
                 {
                     if (!ObjectsOn(curr).Any(o => o.type == code))
                     {
@@ -200,14 +188,14 @@ public class Game1 : Game
         return false;
     }
 
-    public bool Is(ObjectType type, Property prop)
+    public bool Is(Type type, Property prop)
     {
         return type switch
         {
-            SpriteObject(Sprite sprite) => CodeSequenceAppears(new List<CodeObject> {
-            new SpriteCode(sprite), new Is(), new PropertyCode(prop)
+            SpriteT(Sprite sprite) => CodeSequenceAppears(new List<CodeT> {
+            new SpriteCodeT(sprite), new SyntaxT(Syntax.Is), new PropertyT(prop)
         }),
-            CodeObject => IsCode(prop),
+            CodeT => IsCode(prop),
             _ => throw new UnreachableException()
 
         };

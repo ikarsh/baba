@@ -9,16 +9,16 @@
     <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/wall.png</File>
     <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/tile.png</File>
     <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/rock.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/baba.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/flag.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/wall.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/rock.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/tile.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/you.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/stop.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/push.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/win.png</File>
-    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/is.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/sprites/baba.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/sprites/flag.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/sprites/wall.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/sprites/rock.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/sprites/tile.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/syntax/is.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/properties/you.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/properties/stop.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/properties/push.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/properties/win.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

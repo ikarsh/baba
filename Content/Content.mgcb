@@ -38,52 +38,53 @@
 /processor:TextureProcessor
 /build:sprites/rock.png
 
-#begin codes/baba.png
+#begin codes/sprites/baba.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/baba.png
+/build:codes/sprites/baba.png
 
-#begin codes/flag.png
+#begin codes/sprites/flag.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/flag.png
+/build:codes/sprites/flag.png
 
-#begin codes/wall.png
+#begin codes/sprites/wall.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/wall.png
+/build:codes/sprites/wall.png
 
-#begin codes/rock.png
+#begin codes/sprites/rock.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/rock.png
+/build:codes/sprites/rock.png
 
-#begin codes/tile.png
+#begin codes/sprites/tile.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/tile.png
+/build:codes/sprites/tile.png
 
-#begin codes/you.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/build:codes/you.png
 
-#begin codes/stop.png
+#begin codes/syntax/is.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/stop.png
+/build:codes/syntax/is.png
 
-#begin codes/push.png
+#begin codes/properties/you.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/push.png
+/build:codes/properties/you.png
 
-#begin codes/win.png
+#begin codes/properties/stop.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/win.png
+/build:codes/properties/stop.png
 
-#begin codes/is.png
+#begin codes/properties/push.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/is.png
+/build:codes/properties/push.png
+
+#begin codes/properties/win.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/properties/win.png
