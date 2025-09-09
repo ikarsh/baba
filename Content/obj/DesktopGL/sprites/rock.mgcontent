@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/rock.png</SourceFile>
+  <SourceTime>2025-09-09T09:50:59.8498724+03:00</SourceTime>
+  <DestFile>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/bin/DesktopGL/sprites/rock.xnb</DestFile>
+  <DestTime>2025-09-09T12:05:44.541754+03:00</DestTime>
+  <Importer>TextureImporter</Importer>
+  <ImporterTime>2025-06-02T13:31:02+03:00</ImporterTime>
+  <Processor>TextureProcessor</Processor>
+  <ProcessorTime>2025-06-02T13:31:02+03:00</ProcessorTime>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

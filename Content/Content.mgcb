@@ -13,78 +13,183 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin sprites/baba.png
+#begin assets/codes/properties/push.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:sprites/baba.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/properties/push.png
 
-#begin sprites/flag.png
+#begin assets/codes/properties/stop.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:sprites/flag.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/properties/stop.png
 
-#begin sprites/wall.png
+#begin assets/codes/properties/win.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:sprites/wall.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/properties/win.png
 
-#begin sprites/tile.png
+#begin assets/codes/properties/you.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:sprites/tile.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/properties/you.png
 
-#begin sprites/rock.png
+#begin assets/codes/sprites/baba.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:sprites/rock.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/sprites/baba.png
 
-#begin codes/sprites/baba.png
+#begin assets/codes/sprites/flag.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/sprites/baba.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/sprites/flag.png
 
-#begin codes/sprites/flag.png
+#begin assets/codes/sprites/rock.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/sprites/flag.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/sprites/rock.png
 
-#begin codes/sprites/wall.png
+#begin assets/codes/sprites/tile.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/sprites/wall.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/sprites/tile.png
 
-#begin codes/sprites/rock.png
+#begin assets/codes/sprites/wall.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/sprites/rock.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/sprites/wall.png
 
-#begin codes/sprites/tile.png
+#begin assets/codes/syntax/is.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/sprites/tile.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/codes/syntax/is.png
 
-
-#begin codes/syntax/is.png
+#begin assets/sprites/baba.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/syntax/is.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/sprites/baba.png
 
-#begin codes/properties/you.png
+#begin assets/sprites/flag.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/properties/you.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/sprites/flag.png
 
-#begin codes/properties/stop.png
+#begin assets/sprites/rock.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/properties/stop.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/sprites/rock.png
 
-#begin codes/properties/push.png
+#begin assets/sprites/tile.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/properties/push.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/sprites/tile.png
 
-#begin codes/properties/win.png
+#begin assets/sprites/wall.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/build:codes/properties/win.png
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/sprites/wall.png
+

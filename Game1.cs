@@ -106,18 +106,18 @@ public class Game1 : Game
 
         foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
         {
-            textures[new SpriteObject(sprite)] = Content.Load<Texture2D>($"sprites/{sprite}");
-            textures[new SpriteCode(sprite)] = Content.Load<Texture2D>($"codes/sprites/{sprite}");
+            textures[new SpriteObject(sprite)] = Content.Load<Texture2D>($"assets/sprites/{sprite}");
+            textures[new SpriteCode(sprite)] = Content.Load<Texture2D>($"assets/codes/sprites/{sprite}");
         }
 
         foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
         {
-            textures[new SyntaxCode(syntax)] = Content.Load<Texture2D>($"codes/syntax/{syntax}");
+            textures[new SyntaxCode(syntax)] = Content.Load<Texture2D>($"assets/codes/syntax/{syntax}");
         }
 
         foreach (Property property in Enum.GetValues(typeof(Property)))
         {
-            textures[new PropertyCode(property)] = Content.Load<Texture2D>($"codes/properties/{property}");
+            textures[new PropertyCode(property)] = Content.Load<Texture2D>($"assets/codes/properties/{property}");
         }
     }
 
