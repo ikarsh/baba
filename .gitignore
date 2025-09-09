@@ -1,0 +1,46 @@
+# Build outputs
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+# MonoGame Content Pipeline
+Content/bin/
+Content/obj/
+*.mgcb.targets
+
+# Platform-specific
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# Temporary files
+*.tmp
+*.log
+*.cache
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Optional: Large assets (depends on your workflow)
+# Content/**/*.wav
+# Content/**/*.mp3
+# Content/**/*.png
+# Content/**/*.jpg
