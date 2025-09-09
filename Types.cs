@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using baba;
 
 
-public enum Sprite { Baba, Flag, Wall, Tile, Rock }
+public enum Sprite { Baba, Flag, Wall, Tile, Rock, Grass }
 public enum Syntax { Is }
 public enum Property { You, Win, Stop, Push }
 
@@ -28,6 +28,8 @@ public static class ObjectExtensions
         {new SpriteCode(Sprite.Rock), ("ROCK", "R") },
         { new SpriteObject(Sprite.Tile), ("tile", "t") },
         {new SpriteCode(Sprite.Tile), ("TILE", "T") },
+        { new SpriteObject(Sprite.Grass), ("grass", "g") },
+        {new SpriteCode(Sprite.Grass), ("GRASS", "G") },
         { new SyntaxCode(Syntax.Is), ("is", "=") },
         { new PropertyCode(Property.You), ("you", "Y") },
         { new PropertyCode(Property.Win), ("win", "!") },

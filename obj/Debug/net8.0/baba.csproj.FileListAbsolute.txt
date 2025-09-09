@@ -45,3 +45,5 @@ c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\as
 c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\assets\sprites\rock.xnb
 c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\assets\sprites\tile.xnb
 c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\assets\sprites\wall.xnb
+c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\assets\codes\sprites\grass.xnb
+c:\Users\idoka.LT07254861\Documents\Programming\baba\bin\Debug\net8.0\Content\assets\sprites\grass.xnb
