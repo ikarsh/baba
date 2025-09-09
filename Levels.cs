@@ -120,6 +120,16 @@ public static class Levels
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . . . . . . . .
             "),
+            4 => FromString(@"
+                . . . . . . . . . . . . . . . 
+                . . . t t t t t . . . . . . . 
+                . . . t B = Y t . w w w w w w 
+                . b . t t t t t . w . . . w W 
+                . . . t t t t t . w . f . w = 
+                . . . t F = ! t . w . . . w # 
+                . . . t t t t t . w w w w w w 
+                . . . . . . . . . . . . . . .
+            "),
             _ => throw new KeyNotFoundException("Level not found"),
         };
     }
