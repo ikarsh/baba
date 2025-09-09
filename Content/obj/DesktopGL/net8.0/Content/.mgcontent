@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/baba.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/flag.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/wall.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/tile.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/sprites/rock.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/baba.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/flag.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/wall.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/rock.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/tile.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/you.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/stop.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/push.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/win.png</File>
+    <File>c:/Users/idoka.LT07254861/Documents/Programming/baba/Content/codes/is.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>

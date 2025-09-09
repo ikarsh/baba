@@ -1,0 +1,89 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin sprites/baba.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:sprites/baba.png
+
+#begin sprites/flag.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:sprites/flag.png
+
+#begin sprites/wall.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:sprites/wall.png
+
+#begin sprites/tile.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:sprites/tile.png
+
+#begin sprites/rock.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:sprites/rock.png
+
+#begin codes/baba.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/baba.png
+
+#begin codes/flag.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/flag.png
+
+#begin codes/wall.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/wall.png
+
+#begin codes/rock.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/rock.png
+
+#begin codes/tile.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/tile.png
+
+#begin codes/you.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/you.png
+
+#begin codes/stop.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/stop.png
+
+#begin codes/push.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/push.png
+
+#begin codes/win.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/win.png
+
+#begin codes/is.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:codes/is.png
