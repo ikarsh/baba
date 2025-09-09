@@ -101,6 +101,7 @@ public class Game1 : Game
     SpriteBatch _spriteBatch;
     int level;
     Board board;
+    List<Rule> rules;
     Dictionary<Object, Texture2D> textures;
 
     double lastMoveTime = 0;
@@ -119,7 +120,7 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        level = -1;
+        level = 0;
         Win();
         base.Initialize();
     }
@@ -145,49 +146,25 @@ public class Game1 : Game
             textures[new PropertyCode(property)] = Content.Load<Texture2D>($"assets/codes/properties/{property}");
         }
     }
-    bool CodeSequenceAppears(List<CodeT> codes)
-    {
-        if (codes.Count() == 0) return true;
-        foreach (Point p in board.Positions)
-        {
-            foreach (Direction d in new[] { Direction.Down, Direction.Right })
-            {
-                bool broke = false;
-                Point curr = p;
 
-                foreach (CodeT code in codes)
-                {
-                    if (!board[curr].Any(o => o == code))
-                    {
-                        broke = true;
-                        break;
-                    }
-
-                    curr = d.OffsetPoint(curr);
-                }
-                if (!broke) return true;
-                if (!board.LegalPosition(curr)) return false;
-            }
-        }
-        return false;
-    }
-
-    public bool Is(Object type, Property prop)
+    public bool IsProp(Object type, Property prop)
     {
         return type switch
         {
-            SpriteObject(Sprite sprite) => CodeSequenceAppears(new List<CodeT> {
-            new SpriteCode(sprite), new SyntaxCode(Syntax.Is), new PropertyCode(prop)
-        }),
-            CodeT => IsCode(prop),
+            SpriteObject(Sprite sprite) => rules.Contains(new IsProp(sprite, prop)),
+            CodeT => prop == Property.Push || prop == Property.Stop,
             _ => throw new UnreachableException()
 
         };
     }
 
-    bool IsCode(Property prop)
+    public Object UpdatedObject(Object obj)
     {
-        return prop == Property.Push || prop == Property.Stop;
+        return obj switch
+        {
+            SpriteObject(Sprite sprite) => new SpriteObject(rules.OfType<IsSprite>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite),
+            _ => obj,
+        };
     }
 
     void Move(Direction d)
@@ -205,7 +182,7 @@ public class Game1 : Game
         {
             foreach (Object o in board[position])
             {
-                if (Is(o, Property.You))
+                if (IsProp(o, Property.You))
                 {
                     Point curr = position;
                     int i = 0;
@@ -214,12 +191,12 @@ public class Game1 : Game
                     {
                         curr = d.OffsetPoint(curr);
                         i += 1;
-                        if (!board.LegalPosition(curr) || board[curr].Any(_o => Is(_o, Property.Stop) & !Is(_o, Property.Push)))
+                        if (!board.LegalPosition(curr) || board[curr].Any(_o => IsProp(_o, Property.Stop) & !IsProp(_o, Property.Push)))
                         {
                             canMove = false;
                             break;
                         }
-                        if (!board[curr].Any(_o => Is(_o, Property.Push))) break;
+                        if (!board[curr].Any(_o => IsProp(_o, Property.Push))) break;
                     }
                     if (canMove)
                     {
@@ -229,23 +206,20 @@ public class Game1 : Game
                         {
                             i -= 1;
                             curr = d.OffsetPoint(curr);
-                            markedBoard[curr] = markedBoard[curr].Select(od => Is(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
+                            markedBoard[curr] = markedBoard[curr].Select(od => IsProp(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
                         }
                     }
                 }
             }
         }
-        foreach (Point position in markedBoard.Keys)
-        {
-            board[position].Clear();
-        }
+        Board newBoard = new Board(board.WID, board.HEI, board.Positions.ToDictionary(p => p, p => new List<Object>()));
         foreach (Point position in markedBoard.Keys)
         {
             foreach ((Object o, Direction? _dir) in markedBoard[position])
             {
                 if (_dir is null)
                 {
-                    board[position].Add(o);
+                    newBoard[position].Add(o);
                 }
             }
         }
@@ -256,10 +230,11 @@ public class Game1 : Game
             {
                 if (_dir is Direction dir)
                 {
-                    board[dir.OffsetPoint(position)].Add(o);
+                    newBoard[dir.OffsetPoint(position)].Add(o);
                 }
             }
         }
+        SetBoard(newBoard);
     }
 
     protected override void Update(GameTime gameTime)
@@ -276,7 +251,7 @@ public class Game1 : Game
 
         foreach (Point p in board.Positions)
         {
-            if (board[p].Any(o => Is(o, Property.You)) && board[p].Any(o => Is(o, Property.Win)))
+            if (board[p].Any(o => IsProp(o, Property.You)) && board[p].Any(o => IsProp(o, Property.Win)))
             {
                 Win();
                 break;
@@ -286,12 +261,22 @@ public class Game1 : Game
         base.Update(gameTime);
     }
 
+    void SetBoard(Board newBoard)
+    {
+        board = newBoard;
+        rules = RuleExtensions.FromBoard(newBoard);
+        foreach (Point p in board.Positions)
+        {
+            board[p] = board[p].Select(UpdatedObject).ToList();
+        }
+    }
+
     void Win()
     {
         level += 1;
         try
         {
-            board = Level(level);
+            SetBoard(Level(level));
         }
         catch (KeyNotFoundException)
         {
@@ -318,7 +303,7 @@ public class Game1 : Game
                 Config.SCREEN_HEIGHT - 2 * MARGIN_HEIGHT),
             Color.Black
         );
-        
+
         foreach (Point position in board.Positions)
         {
             if (board[position].Count() > 0)
