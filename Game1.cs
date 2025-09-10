@@ -3,17 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net.Mime;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using static Levels;
+
+using Microsoft.Xna.Framework;        // Point, Vector2, Color, etc.
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;  // Keyboard, KeyboardState, Mouse, etc.
 
 namespace baba;
 
@@ -26,23 +21,7 @@ static class Config
     const int MIN_MARGIN_WIDTH = 20;
     public const int SCREEN_WIDTH = MAX_BOARD_WIDTH * SQUARE_SIZE + 2 * MIN_MARGIN_WIDTH;
     public const int SCREEN_HEIGHT = MAX_BOARD_HEIGHT * SQUARE_SIZE + 2 * MIN_MARGIN_HEIGHT;
-    public const double MOVE_DELAY_MS = 30;
-}
-
-static class Utils
-{
-    // public static  IEnumerable<Point> BoardPositions()
-    // {
-    //     return Enumerable.Range(0, Config.SCR_WID).SelectMany(x => Enumerable.Range(0, Config.SCR_HEI).Select(y => new Point(x, y)));
-    // }
-    // public static bool InBoard(Point point)
-    // {
-    //     return point.X >= 0 && point.X <= Config.SCR_WID - 1 && point.Y >= 0 && point.Y <= Config.SCR_HEI - 1;
-    // }
-
-    // public static void Draw(SpriteBatch g, Point position, Texture2D texture)
-    // {
-    // }
+    public const double DELAY_MS = 120;
 }
 
 public enum Direction { Up, Down, Right, Left }
@@ -100,11 +79,12 @@ public class Game1 : Game
     GraphicsDeviceManager _graphics;
     SpriteBatch _spriteBatch;
     int level;
+    List<Board> history;
     Board board;
     List<Rule> rules;
     Dictionary<Object, Texture2D> textures;
 
-    double lastMoveTime = 0;
+    double unlockTime = 0;
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -121,7 +101,7 @@ public class Game1 : Game
     {
         // TODO: Add your initialization logic here
         level = 0;
-        ResetBoard();
+        StartLevel();
         base.Initialize();
     }
 
@@ -167,7 +147,7 @@ public class Game1 : Game
         };
     }
 
-    void Move(Direction d)
+    Board MovedBoard(Direction d)
     {
         Dictionary<Point, List<(Object, Direction?)>> markedBoard = new Dictionary<Point, List<(Object, Direction?)>>();
         foreach (Point p in board.Positions)
@@ -223,7 +203,6 @@ public class Game1 : Game
                 }
             }
         }
-
         foreach (Point position in markedBoard.Keys)
         {
             foreach ((Object o, Direction? _dir) in markedBoard[position])
@@ -234,37 +213,68 @@ public class Game1 : Game
                 }
             }
         }
-        SetBoard(newBoard);
+        return newBoard;
+    }
+
+    void PostMove()
+    {
+        foreach (Point p in board.Positions)
+        {
+            board[p] = board[p].Select(UpdatedObject).ToList();
+        }
+    }
+
+    bool Won()
+    {
+        return board.Positions.Any(p => board[p].Any(o => IsProp(o, Property.You)) && board[p].Any(o => IsProp(o, Property.Win)));
     }
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-
-        if (Keyboard.GetState().IsKeyDown(Keys.R))
+        double time = gameTime.TotalGameTime.TotalMilliseconds;
+        if (time < unlockTime)
         {
-            ResetBoard();
+            base.Update(gameTime);
             return;
         }
 
-        if (DirectionExtensions.FromKeyboard() is Direction d)
-        {
-            double time = gameTime.TotalGameTime.TotalMilliseconds;
-            if (time - lastMoveTime > Config.MOVE_DELAY_MS) Move(d);
-            lastMoveTime = time;
-        }
 
-        foreach (Point p in board.Positions)
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Exit();
+        else if (Keyboard.GetState().IsKeyDown(Keys.R))
         {
-            if (board[p].Any(o => IsProp(o, Property.You)) && board[p].Any(o => IsProp(o, Property.Win)))
+            ResetBoard();
+        }
+        else if (Keyboard.GetState().IsKeyDown(Keys.Z))
+        {
+            if (history.Count() > 0)
             {
-                Win();
-                break;
+                SetBoard(history.Last());
+                history.RemoveAt(history.Count() - 1);
             }
         }
+        else if (DirectionExtensions.FromKeyboard() is Direction d)
+        {
+            {
+                history.Add(board);
+                SetBoard(MovedBoard(d));
+                if (Won()) Win();
+            }
+        }
+        else
+        {
+            base.Update(gameTime);
+            return;
+        }
 
+        unlockTime = time + Config.DELAY_MS;
         base.Update(gameTime);
+    }
+
+    void StartLevel()
+    {
+        history = new List<Board>();
+        ResetBoard();
     }
 
     void ResetBoard()
@@ -276,15 +286,13 @@ public class Game1 : Game
     {
         board = newBoard;
         rules = RuleExtensions.FromBoard(newBoard);
-        foreach (Point p in board.Positions)
-        {
-            board[p] = board[p].Select(UpdatedObject).ToList();
-        }
+        PostMove();
     }
 
     void Win()
     {
         level += 1;
+        StartLevel();
         try
         {
             ResetBoard();
