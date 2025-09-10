@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 
 
-public enum Sprite { Baba, Flag, Wall, Tile, Rock, Grass, Water, Skull }
+public enum Sprite { Baba, Flag, Wall, Tile, Rock, Grass, Water, Skull, Lava }
 public enum Syntax { Is }
-public enum Property { You, Win, Stop, Push, Sink, Defeat }
+public enum Property { You, Win, Stop, Push, Sink, Defeat, Melt, Hot }
 
 public abstract record Object;
 // abstract record CodeRecord;
@@ -33,6 +33,8 @@ public static class ObjectExtensions
         {new SpriteCode(Sprite.Water), ("WATER", "_") },
         { new SpriteObject(Sprite.Skull), ("skull", "s") },
         {new SpriteCode(Sprite.Skull), ("skull", "S") },
+        { new SpriteObject(Sprite.Lava), ("lava", "l") },
+        {new SpriteCode(Sprite.Lava), ("LAVA", "L") },
         { new SyntaxCode(Syntax.Is), ("is", "=") },
         { new PropertyCode(Property.You), ("you", "Y") },
         { new PropertyCode(Property.Win), ("win", "!") },
@@ -40,6 +42,8 @@ public static class ObjectExtensions
         { new PropertyCode(Property.Push), ("push", ">") },
         { new PropertyCode(Property.Sink), ("sink", "~") },
         { new PropertyCode(Property.Defeat), ("defeat", "*") },
+        { new PropertyCode(Property.Hot), ("hot", "[") },
+        { new PropertyCode(Property.Melt), ("melt", "]") },
     };
 
     public static string ToString(this Object type)

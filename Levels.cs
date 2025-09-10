@@ -139,6 +139,26 @@ public static class Levels
                 . . . s . . . . . s . . . . . . . . . . . . . . 
             "),
             5 => FromString(@"
+                W = # l l . w . . . . . w . . . w . . . l l l l l l l . . . . . . 
+                l l l l . . w . . . . . . . b . w . . l l l l l l l . . . . . . .
+                l l . . . . w . . . . . w . . . w . . l l l l l l . . . . . . . .
+                l . . . . . w . B = Y . w w w w w . l l l l l l l . . . . . . . . 
+                . . . . . . w w . . . w w . . . . . l l l l l l . . . . . . . . . 
+                . . . . . . w . . . . . r . . . . . l l l l l l . . . . . . . . . 
+                . . . . . . w w w w w w w . . . . l l l l l l l . . . . . . . . . 
+                . . . . . . w R w . . . . . . . . l l l l l l . . . . . . . . . . 
+                . . . . . . . = . . . . . . . . . l l l l l l . . . . . . . . . . 
+                . . . . . . . > . . . . . . . . l l l l l l l . . . . . . . . . . 
+                . . . . . . . . . . . . L . . . l l l l l l . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . l l l l l l . . . . . . . . . . . . 
+                . . . . . . . w B = ] w . . . l l l l l l . . . . . f . . . . . . 
+                . . . . . . . w w w w w . . l l l l l l . . . . . . . . . . . . . 
+                . . . . . . . w L = [ w . . l l l l l . . . . . . F = ! . . . . . 
+                . . . . . . . w w w w w . l l l l l l . . . . . . . . . . . . . l 
+                . . . . . . . . . . . . l l l l l l . . . . . . . . . . . . . l l
+                . . . . . . . . . . . l l l l l l l . . . . . . . . . . . . l l l 
+            "),
+            6 => FromString(@"
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . w w w w w w w w w w w w w w . . . .
@@ -154,7 +174,7 @@ public static class Levels
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . . . . . . . .
             "),
-            6 => FromString(@"
+            7 => FromString(@"
                 . . . . . . . . . . . . . . . 
                 . . . t t t t t . . . . . . . 
                 . . . t B = Y t . w w w w w w 

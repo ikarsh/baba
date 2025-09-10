@@ -12,20 +12,6 @@ using Microsoft.Xna.Framework.Graphics;  // Keyboard, KeyboardState, Mouse, etc.
 
 namespace baba;
 
-static class Config
-{
-    public const int SQUARE_SIZE = 50;
-    const int MAX_BOARD_WIDTH = 33;
-    const int MAX_BOARD_HEIGHT = 18;
-    const int MIN_MARGIN_HEIGHT = 20;
-    const int MIN_MARGIN_WIDTH = 20;
-    public const int SCREEN_WIDTH = MAX_BOARD_WIDTH * SQUARE_SIZE + 2 * MIN_MARGIN_WIDTH;
-    public const int SCREEN_HEIGHT = MAX_BOARD_HEIGHT * SQUARE_SIZE + 2 * MIN_MARGIN_HEIGHT;
-    public const double DELAY_MS = 120;
-
-    public const int START_LEVEL = 4;
-}
-
 public enum Direction { Up, Down, Right, Left }
 
 static class DirectionExtensions
@@ -229,18 +215,24 @@ public class Game1 : Game
 
         foreach (Point p in board.Positions)
         {
-            // var sprites = board[p].OfType<SpriteObject>().Select(o => o.sprite);
+            bool hasSink = board[p].Any(o => IsObjProp(o, Property.Sink));
+            bool hasDefeat = board[p].Any(o => IsObjProp(o, Property.Defeat));
+            bool hasHot = board[p].Any(o => IsObjProp(o, Property.Hot));
 
-            // sink
-            if (board[p].Count() > 1 && board[p].Any(o => IsObjProp(o, Property.Sink)))
+
+            if (hasSink)
             {
-                board[p].Clear();
+                if (board[p].Count() > 1) board[p].Clear();
             }
 
-            // defeat
-            if (board[p].Any(o => IsObjProp(o, Property.Defeat)))
+            if (hasDefeat)
             {
                 board[p] = board[p].Where(o => !IsObjProp(o, Property.You)).ToList();
+            }
+
+            if (hasHot)
+            {
+                board[p] = board[p].Where(o => !IsObjProp(o, Property.Melt)).ToList();
             }
         }
     }
