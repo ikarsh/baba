@@ -22,6 +22,8 @@ static class Config
     public const int SCREEN_WIDTH = MAX_BOARD_WIDTH * SQUARE_SIZE + 2 * MIN_MARGIN_WIDTH;
     public const int SCREEN_HEIGHT = MAX_BOARD_HEIGHT * SQUARE_SIZE + 2 * MIN_MARGIN_HEIGHT;
     public const double DELAY_MS = 120;
+
+    public const int START_LEVEL = 4;
 }
 
 public enum Direction { Up, Down, Right, Left }
@@ -100,7 +102,7 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        level = 0;
+        level = Config.START_LEVEL;
         StartLevel();
         base.Initialize();
     }
@@ -127,7 +129,7 @@ public class Game1 : Game
         }
     }
 
-    public bool IsProp(Object type, Property prop)
+    public bool IsObjProp(Object type, Property prop)
     {
         return type switch
         {
@@ -138,14 +140,15 @@ public class Game1 : Game
         };
     }
 
-    public Object UpdatedObject(Object obj)
-    {
-        return obj switch
+    
+    Object WhatIsObj(Object o) {
+        return o switch
         {
             SpriteObject(Sprite sprite) => new SpriteObject(rules.OfType<IsSprite>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite),
-            _ => obj,
+            _ => o
         };
     }
+
 
     Board MovedBoard(Direction d)
     {
@@ -162,7 +165,7 @@ public class Game1 : Game
         {
             foreach (Object o in board[position])
             {
-                if (IsProp(o, Property.You))
+                if (IsObjProp(o, Property.You))
                 {
                     Point curr = position;
                     int i = 0;
@@ -171,12 +174,12 @@ public class Game1 : Game
                     {
                         curr = d.OffsetPoint(curr);
                         i += 1;
-                        if (!board.LegalPosition(curr) || board[curr].Any(_o => IsProp(_o, Property.Stop) & !IsProp(_o, Property.Push)))
+                        if (!board.LegalPosition(curr) || board[curr].Any(_o => IsObjProp(_o, Property.Stop) & !IsObjProp(_o, Property.Push)))
                         {
                             canMove = false;
                             break;
                         }
-                        if (!board[curr].Any(_o => IsProp(_o, Property.Push))) break;
+                        if (!board[curr].Any(_o => IsObjProp(_o, Property.Push))) break;
                     }
                     if (canMove)
                     {
@@ -186,7 +189,7 @@ public class Game1 : Game
                         {
                             i -= 1;
                             curr = d.OffsetPoint(curr);
-                            markedBoard[curr] = markedBoard[curr].Select(od => IsProp(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
+                            markedBoard[curr] = markedBoard[curr].Select(od => IsObjProp(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
                         }
                     }
                 }
@@ -218,15 +221,33 @@ public class Game1 : Game
 
     void PostMove()
     {
+        // Sprite is Sprite
         foreach (Point p in board.Positions)
         {
-            board[p] = board[p].Select(UpdatedObject).ToList();
+            board[p] = board[p].Select(WhatIsObj).ToList();
+        }
+
+        foreach (Point p in board.Positions)
+        {
+            // var sprites = board[p].OfType<SpriteObject>().Select(o => o.sprite);
+
+            // sink
+            if (board[p].Count() > 1 && board[p].Any(o => IsObjProp(o, Property.Sink)))
+            {
+                board[p].Clear();
+            }
+
+            // defeat
+            if (board[p].Any(o => IsObjProp(o, Property.Defeat)))
+            {
+                board[p] = board[p].Where(o => !IsObjProp(o, Property.You)).ToList();
+            }
         }
     }
 
     bool Won()
     {
-        return board.Positions.Any(p => board[p].Any(o => IsProp(o, Property.You)) && board[p].Any(o => IsProp(o, Property.Win)));
+        return board.Positions.Any(p => board[p].Any(o => IsObjProp(o, Property.You)) && board[p].Any(o => IsObjProp(o, Property.Win)));
     }
 
     protected override void Update(GameTime gameTime)

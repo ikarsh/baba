@@ -8,6 +8,10 @@ public abstract record Rule;
 public record IsProp(Sprite sprite, Property property) : Rule;
 public record IsSprite(Sprite sprite1, Sprite sprite2) : Rule;
 
+struct GameRules
+{
+    List<Rule> rules;
+}
 
 public static class RuleExtensions
 {

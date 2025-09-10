@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using baba;
 
 
-public enum Sprite { Baba, Flag, Wall, Tile, Rock, Grass }
+public enum Sprite { Baba, Flag, Wall, Tile, Rock, Grass, Water, Skull }
 public enum Syntax { Is }
-public enum Property { You, Win, Stop, Push }
+public enum Property { You, Win, Stop, Push, Sink, Defeat }
 
 public abstract record Object;
 // abstract record CodeRecord;
@@ -30,11 +29,17 @@ public static class ObjectExtensions
         {new SpriteCode(Sprite.Tile), ("TILE", "T") },
         { new SpriteObject(Sprite.Grass), ("grass", "g") },
         {new SpriteCode(Sprite.Grass), ("GRASS", "G") },
+        { new SpriteObject(Sprite.Water), ("water", "-") },
+        {new SpriteCode(Sprite.Water), ("WATER", "_") },
+        { new SpriteObject(Sprite.Skull), ("skull", "s") },
+        {new SpriteCode(Sprite.Skull), ("skull", "S") },
         { new SyntaxCode(Syntax.Is), ("is", "=") },
         { new PropertyCode(Property.You), ("you", "Y") },
         { new PropertyCode(Property.Win), ("win", "!") },
         { new PropertyCode(Property.Stop), ("stop", "#") },
         { new PropertyCode(Property.Push), ("push", ">") },
+        { new PropertyCode(Property.Sink), ("sink", "~") },
+        { new PropertyCode(Property.Defeat), ("defeat", "*") },
     };
 
     public static string ToString(this Object type)
