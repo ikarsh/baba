@@ -13,7 +13,6 @@ public static class Levels
 
     public static Board FromString(string levelStr)
     {
-        Console.WriteLine("Parsing level...");
         var rows = levelStr.Split('\n').Where(r => !string.IsNullOrWhiteSpace(r)).ToArray();
         int HEI = rows.Length;
         int WID = rows[0].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
@@ -28,7 +27,6 @@ public static class Levels
             }
             for (int x = 0; x < cols.Length; x++)
             {
-                Console.WriteLine($"Processing cell ({x}, {y}): '{cols[x]}'");
                 if (cols[x] == ".")
                 {
                     board.objects[new Point(x, y)] = new List<Object> { };
@@ -39,7 +37,6 @@ public static class Levels
                 }
             }
         }
-        Console.WriteLine("Level parsed successfully.");
         return board;
     }
     public static Board Level(int n)
