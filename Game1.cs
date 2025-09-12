@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using static Levels;
+using static TextureExtractor;
 
 using Microsoft.Xna.Framework;        // Point, Vector2, Color, etc.
 using Microsoft.Xna.Framework.Input;
@@ -12,7 +13,7 @@ using Microsoft.Xna.Framework.Graphics;  // Keyboard, KeyboardState, Mouse, etc.
 
 namespace baba;
 
-public enum Direction { Up, Down, Right, Left }
+public enum Direction { Right, Up, Left, Down };
 
 static class DirectionExtensions
 {
@@ -70,7 +71,7 @@ public class Game1 : Game
     List<Board> history;
     Board board;
     List<Rule> rules;
-    Dictionary<Object, Texture2D> textures;
+    Dictionary<Object, Gif> GifDictionary;
 
     double unlockTime = 0;
     public Game1()
@@ -96,33 +97,16 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        textures = new Dictionary<Object, Texture2D>();
-
-        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
-        {
-            textures[new SpriteObject(sprite)] = Content.Load<Texture2D>($"assets/sprites/{sprite}");
-            textures[new SpriteCode(sprite)] = Content.Load<Texture2D>($"assets/codes/sprites/{sprite}");
-        }
-
-        foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
-        {
-            textures[new SyntaxCode(syntax)] = Content.Load<Texture2D>($"assets/codes/syntax/{syntax}");
-        }
-
-        foreach (Property property in Enum.GetValues(typeof(Property)))
-        {
-            textures[new PropertyCode(property)] = Content.Load<Texture2D>($"assets/codes/properties/{property}");
-        }
+        GifDictionary = SpriteSheetExtensions.LoadGifs(this);
     }
 
     public bool IsObjProp(Object type, Property prop)
     {
         return type switch
         {
-            SpriteObject(Sprite sprite) => rules.Contains(new IsProp(sprite, prop)),
-            CodeT => prop == Property.Push || prop == Property.Stop,
+            SpriteObject(Sprite sprite, Direction direction, SpriteState state) => rules.Contains(new IsPropRule(sprite, prop)),
+            Code => prop == Property.Push || prop == Property.Stop,
             _ => throw new UnreachableException()
-
         };
     }
 
@@ -130,7 +114,7 @@ public class Game1 : Game
     Object WhatIsObj(Object o) {
         return o switch
         {
-            SpriteObject(Sprite sprite) => new SpriteObject(rules.OfType<IsSprite>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite),
+            SpriteObject(Sprite sprite, Direction direction, SpriteState state) => (rules.OfType<IsSpriteRule>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite).Object(direction, state),
             _ => o
         };
     }
@@ -198,7 +182,7 @@ public class Game1 : Game
             {
                 if (_dir is Direction dir)
                 {
-                    newBoard[dir.OffsetPoint(position)].Add(o);
+                    newBoard[dir.OffsetPoint(position)].Add(o.AfterMove(dir));
                 }
             }
         }
@@ -244,6 +228,11 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
+        foreach (Gif gif in GifDictionary.Values)
+        {
+            gif.Update(gameTime);
+        }
+
         double time = gameTime.TotalGameTime.TotalMilliseconds;
         if (time < unlockTime)
         {
@@ -327,7 +316,7 @@ public class Game1 : Game
         _spriteBatch.Begin();
 
         _spriteBatch.Draw(
-            textures[new SpriteObject(Sprite.Baba)],
+            Content.Load<Texture2D>("solid_black"),
             new Rectangle(
                 MARGIN_WIDTH,
                 MARGIN_HEIGHT,
@@ -341,17 +330,20 @@ public class Game1 : Game
             if (board[position].Count() > 0)
             {
 
-                Texture2D texture = textures[board[position].Last()];
-                _spriteBatch.Draw(
-                    texture,
-                    new Rectangle(
-                        MARGIN_WIDTH + position.X * Config.SQUARE_SIZE,
-                        MARGIN_HEIGHT + position.Y * Config.SQUARE_SIZE,
-                        Config.SQUARE_SIZE,
-                        Config.SQUARE_SIZE
-                    ),
-                    Color.White
-                );
+                foreach (Object o in board[position])
+                {
+                    Gif gif = GifDictionary[o];
+                    _spriteBatch.Draw(
+                        gif.GetCurrentFrame(),
+                        new Rectangle(
+                            MARGIN_WIDTH + position.X * Config.SQUARE_SIZE,
+                            MARGIN_HEIGHT + position.Y * Config.SQUARE_SIZE,
+                            Config.SQUARE_SIZE,
+                            Config.SQUARE_SIZE
+                        ),
+                        Color.White
+                    );
+                }
             }
         }
         _spriteBatch.End();

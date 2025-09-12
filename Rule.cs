@@ -5,8 +5,8 @@ using baba;
 using Microsoft.Xna.Framework;
 
 public abstract record Rule;
-public record IsProp(Sprite sprite, Property property) : Rule;
-public record IsSprite(Sprite sprite1, Sprite sprite2) : Rule;
+public record IsPropRule(Sprite sprite, Property property) : Rule;
+public record IsSpriteRule(Sprite sprite1, Sprite sprite2) : Rule;
 
 struct GameRules
 {
@@ -15,7 +15,7 @@ struct GameRules
 
 public static class RuleExtensions
 {
-
+    
     public static List<Rule> FromBoard(Board board)
     {
         List<Rule> res = new List<Rule>();
@@ -24,11 +24,10 @@ public static class RuleExtensions
             foreach (Direction d in new[] { Direction.Down, Direction.Right })
             {
                 Point curr = position;
-                // bool ok = true;
                 List<Sprite> sprite1s = board[curr].OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
                 if (sprite1s.Count() == 0) continue;
                 curr = d.OffsetPoint(curr);
-                if (!(board.LegalPosition(curr) && board[curr].Any(o => o == new SyntaxCode(Syntax.Is)))) continue;
+                if (!(board.LegalPosition(curr) && board[curr].Any(o => o == Syntax.Is.Code()))) continue;
                 curr = d.OffsetPoint(curr);
                 if (!board.LegalPosition(curr)) continue;
                 List<Sprite> sprite2s = board[curr].OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
@@ -38,11 +37,11 @@ public static class RuleExtensions
                 {
                     foreach (Sprite sprite2 in sprite2s)
                     {
-                        res.Add(new IsSprite(sprite1, sprite2));
+                        res.Add(new IsSpriteRule(sprite1, sprite2));
                     }
                     foreach (Property property in properties)
                     {
-                        res.Add(new IsProp(sprite1, property));
+                        res.Add(new IsPropRule(sprite1, property));
                     }
                 }
             }
