@@ -52,91 +52,242 @@ public static class SpriteSheetExtensions
             _ => throw new NotImplementedException($"No sheet position for property '{property}'")
         };
     }
+    
+    public static bool IsCharacter(this Sprite sprite) {
+        return sprite.SpriteSheetPosition().Item1 == SpriteSheet.Characters;
+    }
+    public static bool IsDirectedItem(this Sprite sprite) {
+        return sprite.SpriteSheetPosition().Item1 == SpriteSheet.DirectedItems;
+    }
+    public static bool IsItem(this Sprite sprite) {
+        return sprite.SpriteSheetPosition().Item1 == SpriteSheet.Items;
+    }
+    public static bool IsTile(this Sprite sprite) {
+        return sprite.SpriteSheetPosition().Item1 == SpriteSheet.Tiles;
+    }
+    
 
-    public static Dictionary<Object, Gif> LoadGifs(Game1 g)
+    static Dictionary<SpriteSheet, Texture2D> sheetTexture(Game1 g)
     {
-        Dictionary<Object, Gif> dict = new();
-
-        Dictionary<SpriteSheet, Texture2D> sheetTexture = new()
-        {
-            { SpriteSheet.Characters, g.Content.Load<Texture2D>("characters") },
-            { SpriteSheet.DirectedItems, g.Content.Load<Texture2D>("directed_items") },
-            { SpriteSheet.Items, g.Content.Load<Texture2D>("items") },
-            { SpriteSheet.Texts, g.Content.Load<Texture2D>("texts") },
-            { SpriteSheet.Tiles, g.Content.Load<Texture2D>("tiles") }
+        return new Dictionary<SpriteSheet, Texture2D> {
+        { SpriteSheet.Characters, g.Content.Load<Texture2D>("characters") },
+        { SpriteSheet.DirectedItems, g.Content.Load<Texture2D>("directed_items") },
+        { SpriteSheet.Items, g.Content.Load<Texture2D>("items") },
+        { SpriteSheet.Texts, g.Content.Load<Texture2D>("texts") },
+        { SpriteSheet.Tiles, g.Content.Load<Texture2D>("tiles") }
         };
+    }
 
+    public static Dictionary<Code, Gif> CodeDict(Game1 g)
+    {
+        Dictionary<SpriteSheet, Texture2D> sheetTextures = sheetTexture(g);
+        Dictionary<Code, Gif> codeDict = new();
         foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
         {
             var (sheet, x, y) = sprite.SpriteSheetPosition();
-            List<Gif> gifs;
-            switch (sheet)
-            {
-                case SpriteSheet.Characters:
-                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 17);
-                    dict[sprite.Code()] = gifs[0];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            dict[sprite.Object((Direction)i, (SpriteState)j)] = gifs[1 + i * 4 + j];
-                        }
-                    }
-                    break;
-                case SpriteSheet.DirectedItems:
-                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 5);
-                    dict[sprite.Code()] = gifs[0];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            dict[sprite.Object((Direction)i, (SpriteState)j)] = gifs[1 + i];
-                        }
-                    }
-                    break;
-                case SpriteSheet.Items:
-                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
-                    dict[sprite.Code()] = gifs[0];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            dict[sprite.Object((Direction)i, (SpriteState)j)] = gifs[1];
-                        }
-                    }
-                    break;
-                case SpriteSheet.Tiles:
-                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
-                    dict[sprite.Code()] = gifs[0];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            dict[sprite.Object((Direction)i, (SpriteState)j)] = gifs[1];
-                        }
-                    }
-                    break;
-                default:
-                    throw new UnreachableException();
-            }
+            var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 1);
+            codeDict[sprite.Code()] = gifs[0];
         }
-
         foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
         {
             var (sheet, x, y) = syntax.SyntaxSheetPosition();
-            var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
-            dict[syntax.Code()] = gifs[0];
+            var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 1);
+            codeDict[syntax.Code()] = gifs[0];
         }
-
         foreach (Property property in Enum.GetValues(typeof(Property)))
         {
             var (sheet, x, y) = property.PropertySheetPosition();
-            var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
-            dict[property.Code()] = gifs[0];
+            var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 1);
+            codeDict[property.Code()] = gifs[0];
         }
-
-        return dict;
+        return codeDict;
     }
+
+    public static Dictionary<Sprite, Gif> ItemDict(Game1 g)
+    {
+        Dictionary<SpriteSheet, Texture2D> sheetTextures = sheetTexture(g);
+        Dictionary<Sprite, Gif> ItemDict = new();
+        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
+        {
+            var (sheet, x, y) = sprite.SpriteSheetPosition();
+            if (sheet == SpriteSheet.Items)
+            {
+                var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 2);
+                ItemDict[sprite] = gifs[1];
+            }
+        }
+        return ItemDict;
+    }
+
+    public static Dictionary<(Sprite, Direction, ObjectState), Gif> CharacterDict(Game1 g)
+    {
+        Dictionary<SpriteSheet, Texture2D> sheetTextures = sheetTexture(g);
+        Dictionary<(Sprite, Direction, ObjectState), Gif> CharacterDict = new();
+        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
+        {
+            var (sheet, x, y) = sprite.SpriteSheetPosition();
+            if (sheet == SpriteSheet.Characters)
+            {
+                var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 17);
+                for (int i = 0; i < 4; i++)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        CharacterDict[(sprite, (Direction)i, (ObjectState)j)] = gifs[1 + i * 4 + j];
+                    }
+                }
+            }
+        }
+        return CharacterDict;
+    }
+
+    public static Dictionary<(Sprite, Direction), Gif> DirectedItemDict(Game1 g)
+    {
+        Dictionary<SpriteSheet, Texture2D> sheetTextures = sheetTexture(g);
+        Dictionary<(Sprite, Direction), Gif> DirectedItemDict = new();
+        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
+        {
+            var (sheet, x, y) = sprite.SpriteSheetPosition();
+            if (sheet == SpriteSheet.DirectedItems)
+            {
+                var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 5);
+                for (int i = 0; i < 4; i++)
+                {
+                    DirectedItemDict[(sprite, (Direction)i)] = gifs[1 + i];
+                }
+            }
+        }
+        return DirectedItemDict;
+    }
+
+    public static Dictionary<(Sprite, bool, bool, bool, bool), Gif> TileDict(Game1 g)
+    {
+        Dictionary<SpriteSheet, Texture2D> sheetTextures = sheetTexture(g);
+        Dictionary<(Sprite, bool, bool, bool, bool), Gif> TileDict = new();
+        foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
+        {
+            var (sheet, x, y) = sprite.SpriteSheetPosition();
+            if (sheet == SpriteSheet.Tiles)
+            {
+                var gifs = ExtractLine(g.GraphicsDevice, sheetTextures[sheet], x, y, 17);
+                for (int i = 0; i < 16; i++)
+                {
+                    bool right = (i & 1) != 0;
+                    bool up = (i & 2) != 0;
+                    bool left = (i & 4) != 0;
+                    bool down = (i & 8) != 0;
+                    TileDict[(sprite, right, up, left, down)] = gifs[1 + i];
+                }
+            }
+        }
+        return TileDict;
+    }
+
+    // // public static Dictionary<Object, Gif> LoadGifs(Game1 g)
+    // {
+    //     Dictionary<Code, Gif> codeDict = new();
+    //     Dictionary<Sprite, Gif> ItemDict = new();
+    //     Dictionary<(Sprite, Direction, ObjectState), Gif> CharacterDict = new();
+    //     Dictionary<(Sprite, Direction), Gif> DirectedItemDict = new();
+    //     Dictionary < () >
+
+
+
+
+
+    //     void LoadCode(Code code, Gif gif)
+    //     {
+    //         for (int i = 0; i < 4; i++)
+    //         {
+    //             for (int j = 0; j < 4; j++)
+    //             {
+    //                 dict[new Object { type = code, direction = (Direction)i, state = (ObjectState)j }] = gif;
+    //             }
+    //         }
+    //     }
+
+
+
+    //     Dictionary<SpriteSheet, Texture2D> sheetTexture = new()
+    //     {
+    //         { SpriteSheet.Characters, g.Content.Load<Texture2D>("characters") },
+    //         { SpriteSheet.DirectedItems, g.Content.Load<Texture2D>("directed_items") },
+    //         { SpriteSheet.Items, g.Content.Load<Texture2D>("items") },
+    //         { SpriteSheet.Texts, g.Content.Load<Texture2D>("texts") },
+    //         { SpriteSheet.Tiles, g.Content.Load<Texture2D>("tiles") }
+    //     };
+
+    //     foreach (Sprite sprite in Enum.GetValues(typeof(Sprite)))
+    //     {
+    //         var (sheet, x, y) = sprite.SpriteSheetPosition();
+    //         List<Gif> gifs;
+    //         switch (sheet)
+    //         {
+    //             case SpriteSheet.Characters:
+    //                 gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 17);
+    //                 dict[sprite.Code()] = gifs[0];
+    //                 for (int i = 0; i < 4; i++)
+    //                 {
+    //                     for (int j = 0; j < 4; j++)
+    //                     {
+    //                         dict[sprite.Object((Direction)i, (ObjectState)j)] = gifs[1 + i * 4 + j];
+    //                     }
+    //                 }
+    //                 break;
+    //             case SpriteSheet.DirectedItems:
+    //                 gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 5);
+    //                 dict[sprite.Code()] = gifs[0];
+    //                 for (int i = 0; i < 4; i++)
+    //                 {
+    //                     for (int j = 0; j < 4; j++)
+    //                     {
+    //                         dict[sprite.Object((Direction)i, (ObjectState)j)] = gifs[1 + i];
+    //                     }
+    //                 }
+    //                 break;
+    //             case SpriteSheet.Items:
+    //                 gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
+    //                 dict[sprite.Code()] = gifs[0];
+    //                 for (int i = 0; i < 4; i++)
+    //                 {
+    //                     for (int j = 0; j < 4; j++)
+    //                     {
+    //                         dict[sprite.Object((Direction)i, (ObjectState)j)] = gifs[1];
+    //                     }
+    //                 }
+    //                 break;
+    //             case SpriteSheet.Tiles:
+    //                 gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
+    //                 dict[sprite.Code()] = gifs[0];
+    //                 for (int i = 0; i < 4; i++)
+    //                 {
+    //                     for (int j = 0; j < 4; j++)
+    //                     {
+    //                         dict[sprite.Object((Direction)i, (ObjectState)j)] = gifs[1];
+    //                     }
+    //                 }
+    //                 break;
+    //             default:
+    //                 throw new UnreachableException();
+    //         }
+    //     }
+
+    //     foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
+    //     {
+    //         var (sheet, x, y) = syntax.SyntaxSheetPosition();
+    //         var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
+    //         dict[syntax.Code()] = gifs[0];
+    //     }
+
+    //     foreach (Property property in Enum.GetValues(typeof(Property)))
+    //     {
+    //         var (sheet, x, y) = property.PropertySheetPosition();
+    //         var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
+    //         dict[property.Code()] = gifs[0];
+    //     }
+
+    //     return dict;
+    // }
 
     public static List<Gif> ExtractLine(
         GraphicsDevice graphicsDevice,
@@ -146,7 +297,8 @@ public static class SpriteSheetExtensions
         int count,
         int width = DefaultSize,
         int height = DefaultSize
-    ) {
+    )
+    {
         var gifs = new List<Gif>();
         for (int i = 0; i < count; i++)
         {

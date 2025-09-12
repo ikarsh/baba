@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 
 public static class Levels
 {
+    const Direction DefaultDirection = Direction.Right;
+    const ObjectState DefaultState = ObjectState.zero;
 
     public static Board FromString(string levelStr)
     {
@@ -33,7 +35,7 @@ public static class Levels
                 }
                 else
                 {
-                    board.objects[new Point(x, y)] = new List<Object> { ObjectExtensions.FromCode(cols[x]) };
+                    board.objects[new Point(x, y)] = new List<Object> { TypeExtensions.FromCode(cols[x]).Object(DefaultDirection, DefaultState) };
                 }
             }
         }

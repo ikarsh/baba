@@ -70,7 +70,11 @@ public class Game1 : Game
     List<Board> history;
     Board board;
     List<Rule> rules;
-    Dictionary<Object, Gif> GifDict;
+    Dictionary<(Sprite, Direction, ObjectState), Gif> CharacterGifDict;
+    Dictionary<Sprite, Gif> ItemGifDict;
+    Dictionary<(Sprite, Direction), Gif> DirectedItemGifDict;
+    Dictionary<Code, Gif> CodeGifDict;
+    Dictionary<(Sprite, bool, bool, bool, bool), Gif> TileGifDict;
 
     double unlockTime = 0;
     public Game1()
@@ -96,25 +100,31 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        GifDict = SpriteSheetExtensions.LoadGifs(this);
+
+        CharacterGifDict = SpriteSheetExtensions.CharacterDict(this);
+        ItemGifDict = SpriteSheetExtensions.ItemDict(this);
+        DirectedItemGifDict = SpriteSheetExtensions.DirectedItemDict(this);
+        CodeGifDict = SpriteSheetExtensions.CodeDict(this);
+        TileGifDict = SpriteSheetExtensions.TileDict(this);
     }
 
-    public bool IsObjProp(Object type, Property prop)
+    public bool IsTypeProp(Type type, Property prop)
     {
         return type switch
         {
-            SpriteObject(Sprite sprite, Direction direction, SpriteState state) => rules.Contains(new IsPropRule(sprite, prop)),
+            SpriteType(Sprite sprite) => rules.Contains(new IsPropRule(sprite, prop)),
             Code => prop == Property.Push || prop == Property.Stop,
             _ => throw new UnreachableException()
         };
     }
 
-    
-    Object WhatIsObj(Object o) {
-        return o switch
+
+    Type WhatIsType(Type type)
+    {
+        return type switch
         {
-            SpriteObject(Sprite sprite, Direction direction, SpriteState state) => (rules.OfType<IsSpriteRule>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite).Object(direction, state),
-            _ => o
+            SpriteType(Sprite sprite) => (rules.OfType<IsSpriteRule>().Where(r => r.sprite1 == sprite).ElementAtOrDefault(0)?.sprite2 ?? sprite).Type(),
+            _ => type
         };
     }
 
@@ -134,7 +144,7 @@ public class Game1 : Game
         {
             foreach (Object o in board[position])
             {
-                if (IsObjProp(o, Property.You))
+                if (IsTypeProp(o.type, Property.You))
                 {
                     Point curr = position;
                     int i = 0;
@@ -143,23 +153,27 @@ public class Game1 : Game
                     {
                         curr = d.OffsetPoint(curr);
                         i += 1;
-                        if (!board.LegalPosition(curr) || board[curr].Any(_o => IsObjProp(_o, Property.Stop) & !IsObjProp(_o, Property.Push)))
+                        if (!board.LegalPosition(curr) || board[curr].Any(_o => IsTypeProp(_o.type, Property.Stop) & !IsTypeProp(_o.type, Property.Push)))
                         {
                             canMove = false;
                             break;
                         }
-                        if (!board[curr].Any(_o => IsObjProp(_o, Property.Push))) break;
+                        if (!board[curr].Any(_o => IsTypeProp(_o.type, Property.Push))) break;
                     }
                     if (canMove)
                     {
-                        markedBoard[position] = markedBoard[position].Select(od => od.Item1 == o ? (o, d) : od).ToList();
+                        markedBoard[position] = markedBoard[position].Select(od => od.Item1.type == o.type ? (o.Move(d), d) : od).ToList();
                         curr = position;
                         while (i > 0)
                         {
                             i -= 1;
                             curr = d.OffsetPoint(curr);
-                            markedBoard[curr] = markedBoard[curr].Select(od => IsObjProp(od.Item1, Property.Push) ? (od.Item1, d) : od).ToList();
+                            markedBoard[curr] = markedBoard[curr].Select(od => IsTypeProp(od.Item1.type, Property.Push) ? (od.Item1.Move(d), d) : od).ToList();
                         }
+                    }
+                    else
+                    {
+                        markedBoard[position] = markedBoard[position].Select(od => od.Item1.type == o.type ? (o.Move(d), null) : od).ToList();
                     }
                 }
             }
@@ -181,7 +195,7 @@ public class Game1 : Game
             {
                 if (_dir is Direction dir)
                 {
-                    newBoard[dir.OffsetPoint(position)].Add(o.AfterMove(dir));
+                    newBoard[dir.OffsetPoint(position)].Add(o);
                 }
             }
         }
@@ -193,15 +207,14 @@ public class Game1 : Game
         // Sprite is Sprite
         foreach (Point p in board.Positions)
         {
-            board[p] = board[p].Select(WhatIsObj).ToList();
+            board[p] = board[p].Select(o => o.ChangeType(WhatIsType(o.type))).ToList();
         }
 
         foreach (Point p in board.Positions)
         {
-            bool hasSink = board[p].Any(o => IsObjProp(o, Property.Sink));
-            bool hasDefeat = board[p].Any(o => IsObjProp(o, Property.Defeat));
-            bool hasHot = board[p].Any(o => IsObjProp(o, Property.Hot));
-
+            bool hasSink = board[p].Any(o => IsTypeProp(o.type, Property.Sink));
+            bool hasDefeat = board[p].Any(o => IsTypeProp(o.type, Property.Defeat));
+            bool hasHot = board[p].Any(o => IsTypeProp(o.type, Property.Hot));
 
             if (hasSink)
             {
@@ -210,27 +223,28 @@ public class Game1 : Game
 
             if (hasDefeat)
             {
-                board[p] = board[p].Where(o => !IsObjProp(o, Property.You)).ToList();
+                board[p] = board[p].Where(o => !IsTypeProp(o.type, Property.You)).ToList();
             }
 
             if (hasHot)
             {
-                board[p] = board[p].Where(o => !IsObjProp(o, Property.Melt)).ToList();
+                board[p] = board[p].Where(o => !IsTypeProp(o.type, Property.Melt)).ToList();
             }
         }
     }
 
     bool Won()
     {
-        return board.Positions.Any(p => board[p].Any(o => IsObjProp(o, Property.You)) && board[p].Any(o => IsObjProp(o, Property.Win)));
+        return board.Positions.Any(p => board[p].Any(o => IsTypeProp(o.type, Property.You)) && board[p].Any(o => IsTypeProp(o.type, Property.Win)));
     }
 
     protected override void Update(GameTime gameTime)
     {
-        foreach (Gif gif in GifDict.Values)
-        {
-            gif.Update(gameTime);
-        }
+        foreach (Gif gif in CharacterGifDict.Values) gif.Update(gameTime);
+        foreach (Gif gif in ItemGifDict.Values) gif.Update(gameTime);
+        foreach (Gif gif in DirectedItemGifDict.Values) gif.Update(gameTime);
+        foreach (Gif gif in CodeGifDict.Values) gif.Update(gameTime);
+        foreach (Gif gif in TileGifDict.Values) gif.Update(gameTime);
 
         double time = gameTime.TotalGameTime.TotalMilliseconds;
         if (time < unlockTime)
@@ -330,7 +344,7 @@ public class Game1 : Game
 
                 foreach (Object o in board[position])
                 {
-                    Gif gif = GifDict[o];
+                    Gif gif = GetGif(position, o);
                     _spriteBatch.Draw(
                         gif.GetCurrentFrame(),
                         new Rectangle(
@@ -346,5 +360,41 @@ public class Game1 : Game
         }
         _spriteBatch.End();
         base.Draw(gameTime);
+    }
+
+    Gif GetGif(Point position, Object o)
+    {
+        return o.type switch
+        {
+            SpriteType(Sprite sprite) when sprite.IsCharacter() => CharacterGifDict[(sprite, o.direction, o.state)],
+            SpriteType(Sprite sprite) when sprite.IsItem() => ItemGifDict[sprite],
+            SpriteType(Sprite sprite) when sprite.IsDirectedItem() => DirectedItemGifDict[(sprite, o.direction)],
+            SpriteType(Sprite sprite) when sprite.IsTile() => TileGif(position, sprite),
+            Code code => CodeGifDict[code],
+            _ => throw new UnreachableException()
+        };
+    }
+
+    Gif TileGif(Point position, Sprite sprite)
+    {
+        bool right = false;
+        bool up = false;
+        bool left = false;
+        bool down = false;
+        foreach (Direction d in Enum.GetValues(typeof(Direction)))
+        {
+            Point np = d.OffsetPoint(position);
+            if (!board.LegalPosition(np) || board[np].Any(o => o.type == new SpriteType(sprite)))
+            {
+                switch (d)
+                {
+                    case Direction.Up: up = true; break;
+                    case Direction.Down: down = true; break;
+                    case Direction.Left: left = true; break;
+                    case Direction.Right: right = true; break;
+                }
+            }
+        }
+        return TileGifDict[(sprite, right, up, left, down)];
     }
 }

@@ -18,14 +18,14 @@ public static class RuleExtensions
             foreach (Direction d in new[] { Direction.Down, Direction.Right })
             {
                 Point curr = position;
-                List<Sprite> sprite1s = board[curr].OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
+                List<Sprite> sprite1s = board[curr].Select(o => o.type).OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
                 if (sprite1s.Count() == 0) continue;
                 curr = d.OffsetPoint(curr);
-                if (!(board.LegalPosition(curr) && board[curr].Any(o => o == Syntax.Is.Code()))) continue;
+                if (!(board.LegalPosition(curr) && board[curr].Any(o => o.type == Syntax.Is.Code()))) continue;
                 curr = d.OffsetPoint(curr);
                 if (!board.LegalPosition(curr)) continue;
-                List<Sprite> sprite2s = board[curr].OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
-                List<Property> properties = board[curr].OfType<PropertyCode>().Select(pc => pc.property).ToList();
+                List<Sprite> sprite2s = board[curr].Select(o => o.type).OfType<SpriteCode>().Select(sc => sc.sprite).ToList();
+                List<Property> properties = board[curr].Select(o => o.type).OfType<PropertyCode>().Select(pc => pc.property).ToList();
 
                 foreach (Sprite sprite1 in sprite1s)
                 {

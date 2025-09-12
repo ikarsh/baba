@@ -6,81 +6,69 @@ public enum Sprite { Baba, Wall, Tile, Grass, Water, Lava, Flag, Rock, Skull };
 public enum Syntax { Is }
 public enum Property { You, Win, Stop, Push, Sink, Defeat, Melt, Hot }
 
-
-
-public static class SpriteExtensions
-{
-    public static SpriteObject Object(this Sprite sprite, Direction direction = Direction.Right, SpriteState state = SpriteState.zero)
-    {
-        return new SpriteObject(sprite, direction, state);
-    }
-
-    public static SpriteCode Code(this Sprite sprite)
-    {
-        return new SpriteCode(sprite);
-    }
-}
-
-
-public abstract record Code : Object;
+public abstract record Type;
+public record SpriteType(Sprite sprite) : Type;
+public abstract record Code : Type;
 public record SpriteCode(Sprite sprite) : Code;
 public record SyntaxCode(Syntax syntax) : Code;
-public static class SyntaxExtensions
-{
-    public static Code Code(this Syntax syntax)
-    {
-        return new SyntaxCode(syntax);
-    }
-}
 public record PropertyCode(Property property) : Code;
 
-public static class PropertyExtensions
+
+public struct Object
 {
-    public static Code Code(this Property property)
+    public Type type;
+    public Direction direction;
+    public ObjectState state;
+
+    public Object Move(Direction direction)
     {
-        return new PropertyCode(property);
+        return new Object { type = type, direction = direction, state = state.Next() };
+    }
+
+    public Object ChangeType(Type newType)
+    {
+        return new Object { type = newType, direction = direction, state = state };
     }
 }
 
-public abstract record Object;
-public record SpriteObject(Sprite sprite, Direction direction, SpriteState state) : Object;
-public enum SpriteState { zero, one, two, three };
-public static class SpriteStateExtensions
+
+public enum ObjectState { zero, one, two, three };
+public static class ObjectStateExtensions
 {
-    public static SpriteState Next(this SpriteState state)
+    public static ObjectState Next(this ObjectState state)
     {
         return state switch
         {
-            SpriteState.zero => SpriteState.one,
-            SpriteState.one => SpriteState.two,
-            SpriteState.two => SpriteState.three,
-            SpriteState.three => SpriteState.zero,
+            ObjectState.zero => ObjectState.one,
+            ObjectState.one => ObjectState.two,
+            ObjectState.two => ObjectState.three,
+            ObjectState.three => ObjectState.zero,
             _ => throw new UnreachableException()
         };
     }
 }
 
 
-public static class ObjectExtensions
+public static class TypeExtensions
 {
-    static Dictionary<Object, (string, string)> typeCodes = new() {
-        {Sprite.Baba.Object(), ("baba", "b") },
+    static Dictionary<Type, (string, string)> typeCodes = new() {
+        {Sprite.Baba.Type(), ("baba", "b") },
         {Sprite.Baba.Code(), ("BABA", "B") },
-        { Sprite.Wall.Object(), ("wall", "w") },
+        { Sprite.Wall.Type(), ("wall", "w") },
         {Sprite.Wall.Code(), ("WALL", "W") },
-        { Sprite.Flag.Object(), ("flag", "f") },
+        { Sprite.Flag.Type(), ("flag", "f") },
         {Sprite.Flag.Code(), ("FLAG", "F") },
-        { Sprite.Rock.Object(), ("rock", "r") },
+        { Sprite.Rock.Type(), ("rock", "r") },
         {Sprite.Rock.Code(), ("ROCK", "R") },
-        { Sprite.Tile.Object(), ("tile", "t") },
+        { Sprite.Tile.Type(), ("tile", "t") },
         {Sprite.Tile.Code(), ("TILE", "T") },
-        { Sprite.Grass.Object(), ("grass", "g") },
+        { Sprite.Grass.Type(), ("grass", "g") },
         {Sprite.Grass.Code(), ("GRASS", "G") },
-        { Sprite.Water.Object(), ("water", "-") },
+        { Sprite.Water.Type(), ("water", "-") },
         {Sprite.Water.Code(), ("WATER", "_") },
-        { Sprite.Skull.Object(), ("skull", "s") },
+        { Sprite.Skull.Type(), ("skull", "s") },
         {Sprite.Skull.Code(), ("skull", "S") },
-        { Sprite.Lava.Object(), ("lava", "l") },
+        { Sprite.Lava.Type(), ("lava", "l") },
         {Sprite.Lava.Code(), ("LAVA", "L") },
         { Syntax.Is.Code(), ("is", "=") },
         { Property.You.Code(), ("you", "Y") },
@@ -93,14 +81,12 @@ public static class ObjectExtensions
         { Property.Melt.Code(), ("melt", "]") },
     };
 
-    
-
-    public static string ToString(this Object type)
+    public static string ToString(this Type type)
     {
         return typeCodes[type].Item1;
     }
 
-    public static Object FromCode(string code)
+    public static Type FromCode(string code)
     {
         foreach (var kv in typeCodes)
         {
@@ -109,12 +95,25 @@ public static class ObjectExtensions
         throw new System.Data.DataException($"Type with code '{code}' not found");
     }
 
-    public static Object AfterMove(this Object o, Direction d)
+    public static SpriteType Type(this Sprite sprite)
     {
-        return o switch
-        {
-            SpriteObject spriteObj => new SpriteObject(spriteObj.sprite, d, spriteObj.state.Next()),
-            _ => o
-        };
+        return new SpriteType(sprite);
+    }
+    public static SpriteCode Code(this Sprite sprite)
+    {
+        return new SpriteCode(sprite);
+    }
+    public static Code Code(this Syntax syntax)
+    {
+        return new SyntaxCode(syntax);
+    }
+    public static Code Code(this Property property)
+    {
+        return new PropertyCode(property);
+    }
+
+    public static Object Object(this Type type, Direction direction, ObjectState state)
+    {
+        return new Object { type = type, direction = direction, state = state };
     }
 }
