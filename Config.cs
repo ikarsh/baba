@@ -10,5 +10,5 @@ public static class Config
     public const int SCREEN_HEIGHT = MAX_BOARD_HEIGHT * SQUARE_SIZE + 2 * MIN_MARGIN_HEIGHT;
     public const double DELAY_MS = 120;
 
-    public const int START_LEVEL = 0;
+    public const int START_LEVEL = 6;
 }

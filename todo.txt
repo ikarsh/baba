@@ -1,2 +1,0 @@
-Fix the equality issue for objects of different directions/states.
-Make You turn to the direction even if can't move.

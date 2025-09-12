@@ -16,7 +16,7 @@ public static class SpriteSheetExtensions
         // This is the top-left pixel of the *code* object, right before the sprite object possibilities.
         return sprite switch
         {
-            Sprite.Baba => (SpriteSheet.Characters, 1, 1),
+            Sprite.Baba => (SpriteSheet.Characters, 551, 1),
             Sprite.Wall => (SpriteSheet.Tiles, 451, 2273),
             Sprite.Tile => (SpriteSheet.Items, 201, 751),
             Sprite.Grass => (SpriteSheet.Tiles, 451, 676),
@@ -25,6 +25,8 @@ public static class SpriteSheetExtensions
             Sprite.Flag => (SpriteSheet.Items, 76, 226),
             Sprite.Rock => (SpriteSheet.Items, 201, 601),
             Sprite.Skull => (SpriteSheet.DirectedItems, 151, 922),
+            Sprite.Flower => (SpriteSheet.Items, 201, 226),
+            Sprite.Brick => (SpriteSheet.Tiles, 451, 151),
             _ => throw new NotImplementedException($"No sheet position for '{sprite}'")
         };
     }

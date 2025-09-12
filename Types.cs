@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using baba;
 
-public enum Sprite { Baba, Wall, Tile, Grass, Water, Lava, Flag, Rock, Skull };
+public enum Sprite { Baba, Wall, Tile, Grass, Water, Lava, Flag, Rock, Skull, Brick, Flower };
 public enum Syntax { Is }
 public enum Property { You, Win, Stop, Push, Sink, Defeat, Melt, Hot }
 
@@ -70,6 +70,10 @@ public static class TypeExtensions
         {Sprite.Skull.Code(), ("skull", "S") },
         { Sprite.Lava.Type(), ("lava", "l") },
         {Sprite.Lava.Code(), ("LAVA", "L") },
+        { Sprite.Brick.Type(), ("brick", "k") },
+        {Sprite.Brick.Code(), ("BRICK", "K") },
+        { Sprite.Flower.Type(), ("flower", "x") },
+        {Sprite.Flower.Code(), ("FLOWER", "X") },
         { Syntax.Is.Code(), ("is", "=") },
         { Property.You.Code(), ("you", "Y") },
         { Property.Win.Code(), ("win", "!") },

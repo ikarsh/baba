@@ -161,6 +161,22 @@ public static class Levels
                 . . . . . . . . . . . l l l l l l l . . . . . . . . . . . . l l l 
             "),
             6 => FromString(@"
+                R = # . r g g g g g . . s . . . . . . . . g g g 
+                . . . . r . g g x . w w s w w w w w w w . . g g 
+                S = * . r . . . . k w . s . . w t t t w . . . g 
+                . . . . r . . . k k w . s . . . t f t w . . . . 
+                F = ! . r . w w w w w . s . . w t t t w . . . . 
+                . . . . r . w t t t w . s . . w w w w w . . x . 
+                r r r r r . w t b t . . s w w w k k . . . . . . 
+                . . . . . . w t t t w . s s s s s s s s s s s s 
+                . . . . . . w w w w w . . . . w k k . . . . . . 
+                . . g . . . . . . . w . W = # w k . . . . x . . 
+                . g g g . . . . B . w . . . . w . . . x . . . . 
+                . . g g . . . . = . w w w w w w . . . . . . . . 
+                . . . . . . . . Y . . . . . . . . x . . . g g . 
+                . . . . . . . . . . . . . . . . . . . g g g g g 
+            "),
+            7 => FromString(@"
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . w w w w w w w w w w w w w w . . . .
@@ -176,7 +192,7 @@ public static class Levels
                 . . . . . . . . . . . . . . . . . . . . . .
                 . . . . . . . . . . . . . . . . . . . . . .
             "),
-            7 => FromString(@"
+            8 => FromString(@"
                 . . . . . . . . . . . . . . . 
                 . . . t t t t t . . . . . . . 
                 . . . t B = Y t . w w w w w w 
