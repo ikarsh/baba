@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using static Levels;
-using static TextureExtractor;
 
 using Microsoft.Xna.Framework;        // Point, Vector2, Color, etc.
 using Microsoft.Xna.Framework.Input;
@@ -71,7 +70,7 @@ public class Game1 : Game
     List<Board> history;
     Board board;
     List<Rule> rules;
-    Dictionary<Object, Gif> GifDictionary;
+    Dictionary<Object, Gif> GifDict;
 
     double unlockTime = 0;
     public Game1()
@@ -97,7 +96,7 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        GifDictionary = SpriteSheetExtensions.LoadGifs(this);
+        GifDict = SpriteSheetExtensions.LoadGifs(this);
     }
 
     public bool IsObjProp(Object type, Property prop)
@@ -228,7 +227,7 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        foreach (Gif gif in GifDictionary.Values)
+        foreach (Gif gif in GifDict.Values)
         {
             gif.Update(gameTime);
         }
@@ -294,10 +293,9 @@ public class Game1 : Game
     void Win()
     {
         level += 1;
-        StartLevel();
         try
         {
-            ResetBoard();
+            StartLevel();
         }
         catch (KeyNotFoundException)
         {
@@ -332,7 +330,7 @@ public class Game1 : Game
 
                 foreach (Object o in board[position])
                 {
-                    Gif gif = GifDictionary[o];
+                    Gif gif = GifDict[o];
                     _spriteBatch.Draw(
                         gif.GetCurrentFrame(),
                         new Rectangle(

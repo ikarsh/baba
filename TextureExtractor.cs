@@ -7,12 +7,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 public enum SpriteSheet {Characters, DirectedItems, Items, Texts, Tiles };
-
 public static class SpriteSheetExtensions
 {
-
-    public static (SpriteSheet, int, int) SpriteSheetPosition(this Sprite sprite)
+    const int Padding = 1;
+    const int DefaultSize = 24;
+    static (SpriteSheet, int, int) SpriteSheetPosition(this Sprite sprite)
     {
+        // This is the top-left pixel of the *code* object, right before the sprite object possibilities.
         return sprite switch
         {
             Sprite.Baba => (SpriteSheet.Characters, 1, 1),
@@ -27,7 +28,7 @@ public static class SpriteSheetExtensions
             _ => throw new NotImplementedException($"No sheet position for '{sprite}'")
         };
     }
-    public static (SpriteSheet, int, int) SyntaxSheetPosition(this Syntax syntax)
+    static (SpriteSheet, int, int) SyntaxSheetPosition(this Syntax syntax)
     {
         return syntax switch
         {
@@ -36,7 +37,7 @@ public static class SpriteSheetExtensions
         };
     }
 
-    public static (SpriteSheet, int, int) PropertySheetPosition(this Property property)
+    static (SpriteSheet, int, int) PropertySheetPosition(this Property property)
     {
         return property switch
         {
@@ -72,7 +73,7 @@ public static class SpriteSheetExtensions
             switch (sheet)
             {
                 case SpriteSheet.Characters:
-                    gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 17);
+                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 17);
                     dict[sprite.Code()] = gifs[0];
                     for (int i = 0; i < 4; i++)
                     {
@@ -83,7 +84,7 @@ public static class SpriteSheetExtensions
                     }
                     break;
                 case SpriteSheet.DirectedItems:
-                    gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 5);
+                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 5);
                     dict[sprite.Code()] = gifs[0];
                     for (int i = 0; i < 4; i++)
                     {
@@ -94,7 +95,7 @@ public static class SpriteSheetExtensions
                     }
                     break;
                 case SpriteSheet.Items:
-                    gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
+                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
                     dict[sprite.Code()] = gifs[0];
                     for (int i = 0; i < 4; i++)
                     {
@@ -105,7 +106,7 @@ public static class SpriteSheetExtensions
                     }
                     break;
                 case SpriteSheet.Tiles:
-                    gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
+                    gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 2);
                     dict[sprite.Code()] = gifs[0];
                     for (int i = 0; i < 4; i++)
                     {
@@ -123,91 +124,64 @@ public static class SpriteSheetExtensions
         foreach (Syntax syntax in Enum.GetValues(typeof(Syntax)))
         {
             var (sheet, x, y) = syntax.SyntaxSheetPosition();
-            var gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
+            var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
             dict[syntax.Code()] = gifs[0];
         }
 
         foreach (Property property in Enum.GetValues(typeof(Property)))
         {
             var (sheet, x, y) = property.PropertySheetPosition();
-            var gifs = TextureExtractor.ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
+            var gifs = ExtractLine(g.GraphicsDevice, sheetTexture[sheet], x, y, 1);
             dict[property.Code()] = gifs[0];
         }
 
         return dict;
     }
-}
 
-public static class TextureExtractorConstants
-{
-    public const int Padding = 1;
-    public const int FrameDelayMs = 300;
-    public const int DefaultSize = 24;
-}
-
-public class Gif {
-    public List<Texture2D> Frames;
-    public int FrameDelayMs;
-    int _currentFrameIndex = 0;
-    int _lastUpdateTimeMs = 0;
-
-    public Gif(List<Texture2D> frames, int frameDelayMs)
-    {
-        Frames = frames;
-        FrameDelayMs = frameDelayMs;
-        _currentFrameIndex = 0;
-        _lastUpdateTimeMs = 0;
-    }
-
-    public void Update(GameTime gameTime)
-    {
-        double time = gameTime.TotalGameTime.TotalMilliseconds;
-        if ( time >= FrameDelayMs + _lastUpdateTimeMs )
-        {
-            _lastUpdateTimeMs = (int)time;
-            _currentFrameIndex = (_currentFrameIndex + 1) % Frames.Count;
-        }
-    }
-    public Texture2D GetCurrentFrame()
-    {
-        return Frames[_currentFrameIndex];
-    }
-}
-
-static class TextureExtractor
-{
-    public static List<Gif> ExtractLine(GraphicsDevice graphicsDevice, Texture2D spriteSheet,
-                                int startX, int startY,
-                                int count,
-                                int width = TextureExtractorConstants.DefaultSize, int height = TextureExtractorConstants.DefaultSize)
-    {
+    public static List<Gif> ExtractLine(
+        GraphicsDevice graphicsDevice,
+        Texture2D spriteSheet,
+        int startX,
+        int startY,
+        int count,
+        int width = DefaultSize,
+        int height = DefaultSize
+    ) {
         var gifs = new List<Gif>();
         for (int i = 0; i < count; i++)
         {
-            int x = startX + i * (width + TextureExtractorConstants.Padding);
+            int x = startX + i * (width + Padding);
             var gif = ExtractGif(graphicsDevice, spriteSheet, x, startY, width, height);
             gifs.Add(gif);
         }
         return gifs;
     }
-    static Gif ExtractGif(GraphicsDevice graphicsDevice, Texture2D spriteSheet,
-                    int startX, int startY,
-                    int width = TextureExtractorConstants.DefaultSize, int height = TextureExtractorConstants.DefaultSize)
-    {
+    static Gif ExtractGif(
+        GraphicsDevice graphicsDevice,
+        Texture2D spriteSheet,
+        int startX,
+        int startY,
+        int width = DefaultSize,
+        int height = DefaultSize
+    ) {
         var sprite1 = ExtractSprite(graphicsDevice, spriteSheet, startX, startY,
                                     width, height);
-        var sprite2 = ExtractSprite(graphicsDevice, spriteSheet, startX, startY + TextureExtractorConstants.Padding + height,
+        var sprite2 = ExtractSprite(graphicsDevice, spriteSheet, startX, startY + Padding + height,
                                     width, height);
-        var sprite3 = ExtractSprite(graphicsDevice, spriteSheet, startX, startY + 2 * (TextureExtractorConstants.Padding + height),
+        var sprite3 = ExtractSprite(graphicsDevice, spriteSheet, startX, startY + 2 * (Padding + height),
                                     width, height);
 
-        return new Gif(new List<Texture2D> { sprite1, sprite2, sprite3 }, TextureExtractorConstants.FrameDelayMs);
+        return new Gif(new List<Texture2D> { sprite1, sprite2, sprite3 });
     }
 
-    static Texture2D ExtractSprite(GraphicsDevice graphicsDevice, Texture2D spriteSheet,
-                            int x, int y,
-                            int width = TextureExtractorConstants.DefaultSize, int height = TextureExtractorConstants.DefaultSize)
-    {
+    static Texture2D ExtractSprite(
+        GraphicsDevice graphicsDevice,
+        Texture2D spriteSheet,
+        int x,
+        int y,
+        int width = DefaultSize,
+        int height = DefaultSize
+    ) {
         // Get source data
         Color[] sourceData = new Color[spriteSheet.Width * spriteSheet.Height];
         spriteSheet.GetData(sourceData);
@@ -232,12 +206,36 @@ static class TextureExtractor
     }
 }
 
-public static class TextureObjectExtensions
-{
+public class Gif {
+    const int FrameDelayMs = 300;
+    List<Texture2D> frames;
+    int _currentFrameIndex = 0;
+    int _lastUpdateTimeMs = 0;
 
-    public static Texture2D ToTexture2D(this Object obj)
+    public Gif(List<Texture2D> frames)
     {
-        // Implement the logic to convert the Object to a Texture2D
-        throw new NotImplementedException();
+        this.frames = frames;
+        _currentFrameIndex = 0;
+        _lastUpdateTimeMs = 0;
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        double time = gameTime.TotalGameTime.TotalMilliseconds;
+        if ( time >= FrameDelayMs + _lastUpdateTimeMs )
+        {
+            _lastUpdateTimeMs = (int)time;
+            AdvanceFrame();
+        }
+    }
+
+    void AdvanceFrame()
+    {
+        _currentFrameIndex = (_currentFrameIndex + 1) % frames.Count;
+    }
+
+    public Texture2D GetCurrentFrame()
+    {
+        return frames[_currentFrameIndex];
     }
 }
